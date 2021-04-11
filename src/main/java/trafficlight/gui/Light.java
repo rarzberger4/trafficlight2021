@@ -1,5 +1,6 @@
 package trafficlight.gui;
 
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -12,16 +13,6 @@ class Light extends JPanel {
     Light(Color color){
         on = color;
     }
-
-    public void turnOn(boolean a){
-        isOn = a;
-        repaint();
-    }
-
-    public boolean isOn(){
-        return isOn;
-    }
-
 
     public Dimension getPreferredSize(){
         int size = (radius+border)*2;

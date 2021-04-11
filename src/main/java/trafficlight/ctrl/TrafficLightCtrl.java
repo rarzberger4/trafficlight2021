@@ -15,18 +15,69 @@ public class TrafficLightCtrl {
 
     private State previousState;
 
-    private TrafficLightGui gui;
+    private final TrafficLightGui gui;
 
+    private boolean doRun = true;
 
     public TrafficLightCtrl() {
         super();
         initStates();
         gui = new TrafficLightGui(this);
         gui.setVisible(true);
+        currentState.notifyObservers();
     }
 
     private void initStates() {
-        //TODO create the states and set current and previous state
+        greenState = new State() {
+            @Override
+            public State getNextState() {
+                previousState = currentState;
+                notifyObservers();
+                yellowState.notifyObservers();
+                return yellowState;
+            }
+            @Override
+            public String getColor() {
+                return "green";
+            }
+        };
+
+        redState = new State() {
+            @Override
+            public State getNextState() {
+                previousState = currentState;
+                notifyObservers();
+                yellowState.notifyObservers();
+                return yellowState;
+            }
+            @Override
+            public String getColor() {
+                return "red";
+            }
+        };
+
+        yellowState = new State() {
+            @Override
+            public State getNextState() {
+                if (previousState.equals(greenState)) {
+                    previousState = currentState;
+                    notifyObservers();
+                    redState.notifyObservers();
+                    return redState;
+                }else {
+                    previousState = currentState;
+                    notifyObservers();
+                    greenState.notifyObservers();
+                    return greenState;
+                }
+            }
+            @Override
+            public String getColor() {
+                return "yellow";
+            }
+        };
+        currentState = greenState;
+        previousState = yellowState;
     }
 
     public State getGreenState() {
@@ -41,27 +92,25 @@ public class TrafficLightCtrl {
         return yellowState;
     }
 
-    public State getCurrentState() {
-        return currentState;
-    }
-
-    public void setCurrentState(State currentState) {
-        this.currentState = currentState;
-    }
-
-    public State getPreviousState() {
-        return previousState;
-    }
-
-    public void setPreviousState(State previousState) {
-        this.previousState = previousState;
-    }
-
-    public void run() {
-        gui.run();
+    public void run()  {
+        int intervall = 1500;
+        while (doRun) {
+            try {
+                Thread.sleep(intervall);
+                nextState();
+            } catch (InterruptedException e) {
+                gui.showErrorMessage(e);
+            }
+        }
+        System.out.println("Stopped");
+        System.exit(0);
     }
 
     public void nextState() {
-        //TODO handle GUi request and update GUI
+        currentState = currentState.getNextState();
+    }
+
+    public void stop() {
+        doRun = false;
     }
 }
