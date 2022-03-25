@@ -5,6 +5,8 @@ import trafficlight.states.State;
 
 public class TrafficLightCtrl {
 
+    private static TrafficLightCtrl instance;
+
     private State greenState;
 
     private State redState;
@@ -19,12 +21,19 @@ public class TrafficLightCtrl {
 
     private boolean doRun = true;
 
-    public TrafficLightCtrl() {
+    private TrafficLightCtrl() {
         super();
         initStates();
         gui = new TrafficLightGui(this);
         gui.setVisible(true);
         currentState.notifyObservers();
+    }
+
+    public static TrafficLightCtrl getInstance(){
+        if(instance == null){
+            instance = new TrafficLightCtrl();
+        }
+        return instance;
     }
 
     private void initStates() {
